@@ -23,7 +23,7 @@ class Widget:
         self.client = client
 
     @classmethod
-    def deserialize(cls, client, widget_data):
+    def deserialize(cls, client, widget_data={}):
         """
         Deserializes Widget data from dictionary
         """
@@ -37,6 +37,7 @@ class Widget:
             'parent': self.parent,
             'attributes': self.attributes,
             'styles': self.styles,
+            'type': self.__class__.__name__,
         }
 
         for field in self.extra_fields:
@@ -53,11 +54,11 @@ class Widget:
 
 
 class TextWidget(Widget):
-    extra_fields = [{'name': 'text'}]
+    extra_fields = [{'name': 'text', 'default': ''}]
 
 
 class ImageWidget(Widget):
-    extra_fields = [{'name': 'image'}]
+    extra_fields = [{'name': 'src'}]
 
 
 class GroupWidget(Widget):
