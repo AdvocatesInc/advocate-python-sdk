@@ -1,25 +1,21 @@
 import os
-
 import requests
 
 from .exceptions import APIException
-# from .dctas import DCTA
-# from .widgets import Widget
+from .campaigns import Campaign
+from .dctas import DCTA
 
 
-class AdvocateClient:
-    def __init__(self, api_key):
+class AdvClient:
+    def __init__(self, api_key, base_url='https://api.adv.gg/v1/'):
         self.api_key = api_key
-        self.api_url = os.environ.get('ADVOCATE_API_URL', 'https://api.adv.gg/v1/')
+        self.api_url = os.environ.get('ADVOCATE_API_URL', base_url)
 
         self.session = requests.Session()
         adapter = requests.adapters.HTTPAdapter(max_retries=5)
         self.session.mount('https://', adapter)
 
         self.dctas = {}
-        self.widgets = {
-
-        }
 
     def _call_advocate_api(self, method, endpoint, data=None, params={}):
         """
@@ -30,7 +26,7 @@ class AdvocateClient:
         url = self.api_url + endpoint
 
         headers = {
-            'Authorization': 'API-Key: {}'.format(self.api_key),
+            'Authorization': 'API-Key {}'.format(self.api_key),
         }
 
         response = api_call(url, json=data, headers=headers)
@@ -46,16 +42,41 @@ class AdvocateClient:
         """
         Make a `get` request to the Advocate API
         """
-        return self._call_advocate_api(endpoint)
+        return self._call_advocate_api('get', endpoint)
+
+    def post(self, endpoint, data):
+        """
+        Make a `get` request to the Advocate API
+        """
+        return self._call_advocate_api('post', endpoint, data=data)
+
+    def put(self, endpoint, data):
+        """
+        Make a `get` request to the Advocate API
+        """
+        return self._call_advocate_api('put', endpoint, data=data)
 
     def get_dctas(self):
         """
         Fetches and deserializes all DCTAs from the user's account
         """
-        pass
+        dcta_data = self.get('dctas/')
+        dctas = [DCTA.deserialize(self, dcta) for dcta in dcta_data]
+
+        return dctas
 
     def get_dcta(self, dcta_id):
         """
         Fetchs and deserializes a signle DCTA from the user's account
         """
-        pass
+        dcta_data = self.get('dctas/{}/'.format(dcta_id))
+        dcta = DCTA.deserialize(self, dcta_data)
+
+        return dcta
+
+    def get_campaigns(self):
+        """
+        Fetches and deserializes all Campaigns from the user's account
+        """
+        campaign_data = self.get('dctas/campaigns/')
+        return [Campaign(self, campaign['name'], campaign['slug']) for campaign in campaign_data]
