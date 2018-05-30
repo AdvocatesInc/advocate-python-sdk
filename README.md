@@ -4,14 +4,14 @@ This SDK is for developing tools on/with the Advocate live-streaming platform.  
 
 # Usage
 
-To start working with the *Advocate SDK*, load the client using:
+To start working with the **Advocate SDK**, load the client using:
 
 ```python-console
 >>> from adv.client import AdvClient
 >>> client = AdvClient('my-super-secret-api-key')
 ```
 
-*Note*: If you don't have an API key, please reach out to use at [info@adv.gg](mailto:info@adv.gg) and tell us about your needs.
+**Note**: If you don't have an API key, please reach out to use at [info@adv.gg](mailto:info@adv.gg) and tell us about your needs.
 
 ## Create a New Dynamic Call to Action
 
@@ -34,8 +34,8 @@ you can create a new DCTA on a campaign using the `create_dcta` method:
 
 Possible kwargs are:
 
-- *name* (required): A short, human-readable name describing your DCTA
-- *global_styes*: A python dictionary of of dictionaries, describing CSS styles that will be added to the browersource's `<head>` tag. For example:
+- **name** (required): A short, human-readable name describing your DCTA
+- **global_styes**: A python dictionary of of dictionaries, describing CSS styles that will be added to the browersource's `<head>` tag. For example:
 
     ```python
     {
@@ -77,10 +77,10 @@ Calling the `render` function on a dcta will re-render the DCTA for all currentl
 
 DCTAs are built out of a combination of `Widget` objects that correspond to certain HTML elements.  They currently include:
 
-- *Text Widget*: For inserting easily-updatable text into your DCTA. Creates a `<p>` tag.
-- *Image Widget*: Adds images to your DCTA.  Creates a `<img>` tag.
-- *Group Widget*: For grouping multiple elements together (e.g. for applying CSS animations or position to a group of elmenets).  Creates a `<div>` tag.
-- *Video Widget*: Coming soon.
+- **Text Widget**: For inserting easily-updatable text into your DCTA. Creates a `<p>` tag.
+- **Image Widget**: Adds images to your DCTA.  Creates a `<img>` tag.
+- **Group Widget**: For grouping multiple elements together (e.g. for applying CSS animations or position to a group of elmenets).  Creates a `<div>` tag.
+- **Video Widget**: Coming soon.
 
 to create a new text widget, use the `add_text_widget` method on any DCTA object:
 
@@ -98,19 +98,19 @@ Once a widget has been added to a DCTA, you'll be able to see it using the `widg
 
 The following kwargs are shared on all widget types:
 
-- *name* (required): A short, human-readable name describing your Widget
-- *styles*: A dictionary of CSS styles that will be applied, inline, to your widget
-- *attributes*: A dictionary of addition HTML attributs (e.g. `class`) that will be added to your Widget
-- *broadcasters*: A list of broadcaster usernames to add to this widget. If a widget has *no* broadcasters, it will be visible to *all* broadcasters.  If the widget has broadcasters, it will only be shown to those broadcasters.  This allows specific parts of a widget to be targeted to specific broadcasters (e.g. unique, broadcasters specific text for each broadcaster).
-- *parent*: ID of a Group widget that is the parent of the current widget. Can be None if the widget has no parent (i.e. is a root element)
+- **name** (required): A short, human-readable name describing your Widget
+- **styles**: A dictionary of CSS styles that will be applied, inline, to your widget
+- **attributes**: A dictionary of addition HTML attributs (e.g. `class`) that will be added to your Widget
+- **broadcasters**: A list of broadcaster usernames to add to this widget. If a widget has **no** broadcasters, it will be visible to **all** broadcasters.  If the widget has broadcasters, it will only be shown to those broadcasters.  This allows specific parts of a widget to be targeted to specific broadcasters (e.g. unique, broadcasters specific text for each broadcaster).
+- **parent**: ID of a Group widget that is the parent of the current widget. Can be None if the widget has no parent (i.e. is a root element)
 
 The following kwargs are on particular widgets:
 
-- *Text Widget*:
-    - *text* (required): The actual text content to be displayed
-- *Image Widget*:
-    - *src* (required): URL to the image to show.
-- *Video Widget*:
+- **Text Widget**:
+    - **text** (required): The actual text content to be displayed
+- **Image Widget**:
+    - **src** (required): URL to the image to show.
+- **Video Widget**:
     - Coming Soon
 
 ## Update a Widget
@@ -129,7 +129,7 @@ Use the `update` method on any widget to update any of the above properties on t
 'Old News!'
 ```
 
-*Note*: This will update the widget data on the server, but it will *not* cause the DCTA to re-render and display the new information.  This is because rendering can be computationally expensive, and you may want to update multiple widgets before you render.  To force a re-render of the DCTA after an update, you can add the `force_render` kwarg:
+**Note**: This will update the widget data on the server, but it will **not** cause the DCTA to re-render and display the new information.  This is because rendering can be computationally expensive, and you may want to update multiple widgets before you render.  To force a re-render of the DCTA after an update, you can add the `force_render` kwarg:
 
 ```python-console
 >>> my_widget.update(text='Look Ma, Immediate Update!', force_render=True)
