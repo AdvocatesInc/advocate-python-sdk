@@ -12,14 +12,14 @@ def class_from_type(type_string):
 
 
 class DCTA:
-    def __init__(self, client, id=None, name='', widgets=[], global_styles={}):
+    def __init__(self, client, id=None, name='', widgets=None, global_styles=None):
         self.client = client
 
         self.id = id
-        self.global_styles = global_styles
+        self.global_styles = {} if global_styles is None else global_styles
         self.name = name
 
-        self.widgets = widgets
+        self.widgets = [] if widgets is None else widgets
 
     def __repr__(self):
         return '<DCTA: {}>'.format(self)

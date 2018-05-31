@@ -1,6 +1,7 @@
 from unittest import TestCase
+from unittest.mock import patch
 
-from adv.widgets import Widget, TextWidget, ImageWidget
+from adv.widgets import Widget, TextWidget, ImageWidget, GroupWidget
 from adv.client import AdvClient
 from adv.dctas import DCTA
 
@@ -8,7 +9,7 @@ from adv.dctas import DCTA
 class WidgetTests(TestCase):
     def setUp(self):
         self.client = AdvClient('test-api-key')
-        self.dcta = DCTA(self.client, id=15, name='Test DCTA')
+        self.dcta = DCTA(self.client, id=15, name='Test DCTA', widgets=[])
         self.client.dctas[15] = self.dcta
 
     def test_simple_deserialization(self):
@@ -101,3 +102,55 @@ class WidgetTests(TestCase):
         }
 
         self.assertEqual(widget.serialize(), expected_data)
+
+    @patch('adv.client.AdvClient.put')
+    def test_update_fills_in_missing_data_for_put(self, mock_put):
+        """
+        Calling the `update` function on a widget should fill in the rest of the data
+        from the widget, so that only the specific kwargs that need updating need to be passed
+        into the function
+        """
+        base_widget_data = {
+            'parent': 1,
+            'styles': {'top': '50%', 'left': '10px'},
+            'dcta': self.dcta.id,
+            'id': 10,
+            'name': 'Test Widget',
+            'attributes': {'class': 'my-widget'},
+            'broadcasters': [],
+            'text': 'Hello World',
+        }
+
+        widget = TextWidget(
+            self.client,
+            **base_widget_data,
+        )
+
+        widget.update(text='Jello Unfurled')
+
+        mock_put.assert_called_with(
+            'widgets/text/10/', {
+                'parent': 1,
+                'styles': {'top': '50%', 'left': '10px'},
+                'dcta': self.dcta.id,
+                'id': 10,
+                'name': 'Test Widget',
+                'attributes': {'class': 'my-widget'},
+                'broadcasters': [],
+                'text': 'Jello Unfurled',
+                'type': 'text',
+            },
+        )
+
+    def test_type_generationg(self):
+        """
+        The `type` property should generate the proper type text
+        """
+        widget = TextWidget(self.client, text='dummy text', dcta=self.dcta.id)
+        self.assertEqual(widget.type, 'text')
+
+        widget = ImageWidget(self.client, src='https://my/image.jpg', dcta=self.dcta.id)
+        self.assertEqual(widget.type, 'image')
+
+        widget = GroupWidget(self.client, dcta=self.dcta.id)
+        self.assertEqual(widget.type, 'group')
