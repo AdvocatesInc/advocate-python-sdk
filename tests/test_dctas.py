@@ -57,7 +57,7 @@ class DCTATests(TestCase):
     @responses.activate
     def test_add_text_widget_creates_and_adds_widget(self):
         """
-        Calling `add_text_widget` should create a new widget in the API, 
+        Calling `add_text_widget` should create a new widget in the API,
         and the add that widget locally to the DCTA
         """
         self.assertEqual(len(self.dcta.widgets), 0)
@@ -87,7 +87,7 @@ class DCTATests(TestCase):
     @responses.activate
     def test_add_image_widget_creates_and_adds_widget(self):
         """
-        Calling `add_image_widget` should create a new widget in the API, 
+        Calling `add_image_widget` should create a new widget in the API,
         and the add that widget locally to the DCTA
         """
         self.assertEqual(len(self.dcta.widgets), 0)
