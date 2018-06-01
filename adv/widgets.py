@@ -67,18 +67,18 @@ class Widget:
     def type(self):
         return self.__class__.__name__.replace('Widget', '').lower()
 
-    def update(self, force_render=False, **kwargs):
+    def update(self, force_render=False, files=None, **kwargs):
         """
         Updates a widget's data on the server (and locally).  Use `force_render` to
         render the DCTA to all active browsersources when the update is done
         """
-        new_data = self.serialize()
+        new_data = {}
 
         for key, value in kwargs.items():
             new_data[key] = value
 
         try:
-            updated_data = self.client.put('widgets/{}/{}/'.format(self.type, self.id), new_data)
+            updated_data = self.client.patch('widgets/{}/{}/'.format(self.type, self.id), new_data, files=files)
         except APIException as error:
             raise UpdateError(
                 'Could not update widget: {}'.format(error.message)
@@ -104,6 +104,29 @@ class TextWidget(Widget):
 class ImageWidget(Widget):
     extra_fields = [{'name': 'src'}]
     type = 'image'
+
+    def update(self, force_render=False, files=None, **kwargs):
+        src = kwargs.pop('src', '')
+
+        if src:
+            src_file = open(src, 'rb')
+            files = {'src': src_file}
+
+        super().update(force_render, files, **kwargs)
+
+
+class VideoWidget(Widget):
+    extra_fields = [{'name': 'src'}]
+    type = 'video'
+
+    def update(self, force_render=False, files=None, **kwargs):
+        src = kwargs.pop('src', '')
+
+        if src:
+            src_file = open(src, 'rb')
+            files = {'src': src_file}
+
+        super().update(force_render, files, **kwargs)
 
 
 class GroupWidget(Widget):

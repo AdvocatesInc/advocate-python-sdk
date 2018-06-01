@@ -1,3 +1,5 @@
+import os
+
 from . import widgets
 from .exceptions import UpdateError, APIException, RenderError
 
@@ -74,9 +76,22 @@ class DCTA:
         Creates a new ImageWidget on this DCTA
         """
         if not src:
-            raise UpdateError('`text` is a required kwarg for `add_text_widget`')
+            raise UpdateError('`src` is a required kwarg for `add_video_widget`')
 
-        self._add_widget('image', src=src, **kwargs)
+        src_file = open(src, 'rb')
+
+        self._add_widget('image', files={'src': (os.path.basename(src), src_file)}, **kwargs)
+
+    def add_video_widget(self, src='', **kwargs):
+        """
+        Creates a new ImageWidget on this DCTA
+        """
+        if not src:
+            raise UpdateError('`text` is a required kwarg for `add_video_widget`')
+
+        src_file = open(src, 'rb')
+
+        self._add_widget('video', files={'src': (os.path.basename(src), src_file)}, **kwargs)
 
     def add_group_widget(self, **kwargs):
         """
@@ -84,7 +99,7 @@ class DCTA:
         """
         self._add_widget('group', **kwargs)
 
-    def _add_widget(self, type, force_render=False, broadcasters=[], **kwargs):
+    def _add_widget(self, type, force_render=False, broadcasters=[], files=None, **kwargs):
         """
         Creates a widget of a given type on a DCTA
         """
@@ -97,7 +112,7 @@ class DCTA:
         }
 
         try:
-            widget_data = self.client.post('widgets/{}/'.format(type), data=new_widget_data)
+            widget_data = self.client.post('widgets/{}/'.format(type), data=new_widget_data, files=files)
         except APIException as error:
             raise UpdateError(
                 'Could not create new {} widget: {}'.format(type, error.message)

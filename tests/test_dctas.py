@@ -108,7 +108,7 @@ class DCTATests(TestCase):
             json=widget_response_data, status=201,
         )
 
-        self.dcta.add_image_widget(name='Test Image Widget', src='https://my/image.jpg')
+        self.dcta.add_image_widget(name='Test Image Widget', src='tests/test.png')
 
         self.assertEqual(len(self.dcta.widgets), 1)
         self.assertEqual(self.dcta.widgets[0].dcta, self.dcta)

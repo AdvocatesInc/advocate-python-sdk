@@ -17,7 +17,7 @@ class AdvClient:
 
         self.dctas = {}
 
-    def _call_advocate_api(self, method, endpoint, data=None, params={}):
+    def _call_advocate_api(self, method, endpoint, data=None, params={}, files=None):
         """
         Low level manager for interfacing with the Advocate API.
         All requests to the API will be handled by this function
@@ -29,7 +29,14 @@ class AdvClient:
             'Authorization': 'API-Key {}'.format(self.api_key),
         }
 
-        response = api_call(url, json=data, headers=headers)
+        kwargs = {}
+        if data is not None and files is None:
+            kwargs['json'] = data
+        elif data is not None:
+            kwargs['data'] = data
+            kwargs['files'] = files
+
+        response = api_call(url, headers=headers, **kwargs)
 
         if response.status_code >= 200 and response.status_code < 300:
             return response.json() if response.content != b'' else ''
@@ -44,17 +51,23 @@ class AdvClient:
         """
         return self._call_advocate_api('get', endpoint)
 
-    def post(self, endpoint, data):
+    def post(self, endpoint, data, files=None):
         """
         Make a `get` request to the Advocate API
         """
-        return self._call_advocate_api('post', endpoint, data=data)
+        return self._call_advocate_api('post', endpoint, data=data, files=files)
 
-    def put(self, endpoint, data):
+    def put(self, endpoint, data, files=None):
         """
-        Make a `get` request to the Advocate API
+        Make a `put` request to the Advocate API
         """
-        return self._call_advocate_api('put', endpoint, data=data)
+        return self._call_advocate_api('put', endpoint, data=data, files=files)
+
+    def patch(self, endpoint, data, files=None):
+        """
+        Make a `patch` request to the Advocate API
+        """
+        return self._call_advocate_api('patch', endpoint, data=data, files=files)
 
     def get_dctas(self):
         """

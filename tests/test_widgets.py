@@ -103,7 +103,7 @@ class WidgetTests(TestCase):
 
         self.assertEqual(widget.serialize(), expected_data)
 
-    @patch('adv.client.AdvClient.put')
+    @patch('adv.client.AdvClient.patch')
     def test_update_fills_in_missing_data_for_put(self, mock_put):
         """
         Calling the `update` function on a widget should fill in the rest of the data
@@ -128,21 +128,9 @@ class WidgetTests(TestCase):
 
         widget.update(text='Jello Unfurled')
 
-        mock_put.assert_called_with(
-            'widgets/text/10/', {
-                'parent': 1,
-                'styles': {'top': '50%', 'left': '10px'},
-                'dcta': self.dcta.id,
-                'id': 10,
-                'name': 'Test Widget',
-                'attributes': {'class': 'my-widget'},
-                'broadcasters': [],
-                'text': 'Jello Unfurled',
-                'type': 'text',
-            },
-        )
+        mock_put.assert_called_with('widgets/text/10/', {'text': 'Jello Unfurled'}, files=None)
 
-    def test_type_generationg(self):
+    def test_type_generation(self):
         """
         The `type` property should generate the proper type text
         """
