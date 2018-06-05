@@ -11,7 +11,7 @@ class DCTATests(TestCase):
 
     def setUp(self):
         self.client = AdvClient('test-api-key')
-        self.dcta = DCTA(self.client, id=15, name='Test DCTA')
+        self.dcta = DCTA(self.client, id=15, name='Test DCTA', component=7)
         self.client.dctas[15] = self.dcta
 
     def test_simple_deserialization(self):
@@ -23,6 +23,7 @@ class DCTATests(TestCase):
         dcta_data = {
             'id': 2,
             'name': 'Test DCTA',
+            'component': 7,
             'global_styles': {
                 'position': 'absolute',
                 'top': '50%',
@@ -139,6 +140,7 @@ class DCTATests(TestCase):
             'name': 'Test DCTA',
             'global_styles': {},
             'id': self.dcta.id,
+            'component': 7,
             'widgets': [
                 {
                     'name': 'Dummy Text Widget',
