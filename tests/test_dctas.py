@@ -182,7 +182,7 @@ class DCTATests(TestCase):
     @patch('adv.client.AdvClient.patch')
     def test_update(self, mock_put):
         """
-        Calling `update` on a DCTA should send the updated data to the server, 
+        Calling `update` on a DCTA should send the updated data to the server,
         and update the DCTA appropriately
         """
         updated_dcta_data = {
@@ -193,7 +193,7 @@ class DCTATests(TestCase):
             'global_styles': {'#dcta-widget-15': {'color': 'red'}}
         }
         mock_put.return_value = updated_dcta_data
-        
+
         self.assertEqual(self.dcta.global_styles, {})
 
         self.dcta.update(global_styles={'#dcta-widget-15': {'color': 'red'}})
