@@ -1,3 +1,5 @@
+import os
+
 from .exceptions import UpdateError, APIException
 
 
@@ -109,9 +111,8 @@ class ImageWidget(Widget):
         src = kwargs.pop('src', '')
 
         if src:
-            src_file = open(src, 'rb')
-            files = {'src': src_file}
-
+            with open(src, 'rb') as src_file:
+                files = {'src': (os.path.basename(src), src_file.read())}
         super().update(force_render, files, **kwargs)
 
 
@@ -123,8 +124,8 @@ class VideoWidget(Widget):
         src = kwargs.pop('src', '')
 
         if src:
-            src_file = open(src, 'rb')
-            files = {'src': src_file}
+            with open(src, 'rb') as src_file:
+                files = {'src': (os.path.basename(src), src_file.read())}
 
         super().update(force_render, files, **kwargs)
 

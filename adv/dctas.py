@@ -80,20 +80,18 @@ class DCTA:
         if not src:
             raise UpdateError('`src` is a required kwarg for `add_video_widget`')
 
-        src_file = open(src, 'rb')
-
-        self._add_widget('image', files={'src': (os.path.basename(src), src_file)}, **kwargs)
+        with open(src, 'rb') as src_file:
+            self._add_widget('image', files={'src': (os.path.basename(src), src_file)}, **kwargs)
 
     def add_video_widget(self, src='', **kwargs):
         """
         Creates a new ImageWidget on this DCTA
         """
         if not src:
-            raise UpdateError('`text` is a required kwarg for `add_video_widget`')
+            raise UpdateError('`src` is a required kwarg for `add_video_widget`')
 
-        src_file = open(src, 'rb')
-
-        self._add_widget('video', files={'src': (os.path.basename(src), src_file)}, **kwargs)
+        with open(src, 'rb') as src_file:
+            self._add_widget('video', files={'src': (os.path.basename(src), src_file)}, **kwargs)
 
     def add_group_widget(self, **kwargs):
         """
