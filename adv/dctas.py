@@ -14,12 +14,13 @@ def class_from_type(type_string):
 
 
 class DCTA:
-    def __init__(self, client, id=None, name='', widgets=None, global_styles=None):
+    def __init__(self, client, id=None, name='', widgets=None, global_styles=None, component=None):
         self.client = client
 
         self.id = id
         self.global_styles = {} if global_styles is None else global_styles
         self.name = name
+        self.component = component
 
         self.widgets = [] if widgets is None else widgets
 
@@ -54,7 +55,8 @@ class DCTA:
             'global_styles': self.global_styles,
             'name': self.name,
             'widgets': [],
-            'id': self.id
+            'id': self.id,
+            'component': self.component,
         }
 
         for widget in self.widgets:
