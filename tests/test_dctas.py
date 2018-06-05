@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 import responses
 
 from adv.client import AdvClient
@@ -177,3 +178,26 @@ class DCTATests(TestCase):
         self.assertEqual(TextWidget, class_from_type('text'))
         self.assertEqual(GroupWidget, class_from_type('group'))
         self.assertEqual(ImageWidget, class_from_type('image'))
+
+    @patch('adv.client.AdvClient.patch')
+    def test_update(self, mock_put):
+        """
+        Calling `update` on a DCTA should send the updated data to the server, 
+        and update the DCTA appropriately
+        """
+        updated_dcta_data = {
+            'Name': 'Test DCTA',
+            'component': 7,
+            'widgets': ['blah blah this should not be touched'],
+            'id': 15,
+            'global_styles': {'#dcta-widget-15': {'color': 'red'}}
+        }
+        mock_put.return_value = updated_dcta_data
+        
+        self.assertEqual(self.dcta.global_styles, {})
+
+        self.dcta.update(global_styles={'#dcta-widget-15': {'color': 'red'}})
+
+        mock_put.assert_called_with('dctas/15/', {'global_styles': {'#dcta-widget-15': {'color': 'red'}}})
+
+        self.assertEqual(self.dcta.global_styles, {'#dcta-widget-15': {'color': 'red'}})

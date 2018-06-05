@@ -140,3 +140,32 @@ class DCTA:
             raise RenderError(
                 'Unable to render DCTA: {}'.format(error.message)
             )
+
+    def update(self, force_render=False, **kwargs):
+        """
+        Updates a DCTA's data on the server (and locally). User `force_render` to
+        render the DCTA to all active browsersources when the update is done
+        """
+        new_data = {}
+
+        for key, value in kwargs.items():
+            new_data[key] = value
+
+        try:
+            updated_data = self.client.patch('dctas/{}/'.format(self.id), new_data)
+        except APIException as error:
+            raise UpdateError(
+                'Could not update widget: {}'.format(error.message)
+            )
+
+        # Widgets can't be updated via the DCTA `update`, so we can safely remove
+        # redundant widget data
+        updated_data.pop('widgets', '')
+
+        for key, value in updated_data.items():
+            setattr(self, key, value)
+
+        if force_render:
+            self.render()
+
+        return self
