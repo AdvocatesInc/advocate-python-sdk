@@ -1,7 +1,7 @@
 import os
 import requests
 
-from .exceptions import APIException
+from .exceptions import APIException, NoMatchException
 from .campaigns import Campaign
 from .dctas import DCTA
 
@@ -93,3 +93,16 @@ class AdvClient:
         """
         campaign_data = self.get('dctas/campaigns/')
         return [Campaign(self, campaign['name'], campaign['slug']) for campaign in campaign_data]
+
+    def get_campaign(self, slug):
+        """
+        Fetches a single campaign by slug
+        """
+        campaigns = self.get_campaigns()
+
+        try:
+            campaign = next(campaign for campaign in campaigns if campaign.slug == slug)
+        except StopIteration:
+            raise NoMatchException('Campaign', 'slug', slug)
+
+        return campaign
