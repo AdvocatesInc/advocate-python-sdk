@@ -38,7 +38,7 @@ class AdvClientTests(TestCase):
             campaign = self.client.get_campaign('wrong-campaign')
 
         self.assertEqual(
-            error.exception.message, 
+            error.exception.message,
             ('Campaign with slug value "wrong-campaign" either does not exist '
              'or cannot be accessed by this Advocate user.'),
         )
