@@ -34,7 +34,7 @@ class AdvClient:
         if data is not None and files is None:
             kwargs['json'] = data
         elif data is not None:
-            kwargs['data'] = {key:json.dumps(value) for key, value in data.items()}
+            kwargs['data'] = {key: json.dumps(value) for key, value in data.items()}
             kwargs['files'] = files
 
         response = api_call(url, headers=headers, **kwargs)
