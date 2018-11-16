@@ -142,3 +142,41 @@ class WidgetTests(TestCase):
 
         widget = GroupWidget(self.client, dcta=self.dcta.id)
         self.assertEqual(widget.type, 'group')
+
+    @patch('adv.client.AdvClient.patch')
+    def test_update_single_style(self, mock_patch):
+        """
+        calling `update_style` should keep all styles the same except the
+        single style to be updated
+        """
+        base_widget_data = {
+            'parent': 1,
+            'styles': {
+                'position': 'absolute',
+                'top': '50%',
+                'left': '10px',
+            },
+            'dcta': self.dcta.id,
+            'id': 10,
+            'name': 'Test Widget',
+            'attributes': {'class': 'my-widget'},
+            'broadcasters': [],
+            'text': 'Hello World',
+        }
+
+        widget = TextWidget(
+            self.client,
+            **base_widget_data,
+        )
+
+        widget.update_style('left', '25px')
+
+        mock_patch.assert_called_with(
+            'widgets/text/10/',
+            {'styles': {
+                'position': 'absolute',
+                'top': '50%',
+                'left': '25px',
+            }},
+            files=None,
+        )

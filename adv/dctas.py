@@ -78,7 +78,7 @@ class DCTA:
         Creates a new ImageWidget on this DCTA
         """
         if not src:
-            raise UpdateError('`src` is a required kwarg for `add_video_widget`')
+            raise UpdateError('`src` is a required kwarg for `add_image_widget`')
 
         with open(src, 'rb') as src_file:
             self._add_widget('image', files={'src': (os.path.basename(src), src_file)}, **kwargs)

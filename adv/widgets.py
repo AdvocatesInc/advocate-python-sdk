@@ -97,6 +97,17 @@ class Widget:
 
         return self
 
+    def update_style(self, style_name, style_value, force_render=False):
+        """
+        Update a single style
+        """
+        new_styles = {
+            **self.styles,
+            style_name: style_value,
+        }
+
+        self.update(styles=new_styles, force_render=force_render)
+
 
 class TextWidget(Widget):
     extra_fields = [{'name': 'text', 'default': ''}]
