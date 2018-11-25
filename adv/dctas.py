@@ -156,7 +156,7 @@ class DCTA:
 
     def _add_event(self, event_type, **kwargs):
         """
-        Creates an Event of a given type 
+        Creates an Event of a given type
         """
         new_event_data = {
             'event_type': event_type,

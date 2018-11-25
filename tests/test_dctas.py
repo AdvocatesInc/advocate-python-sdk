@@ -245,7 +245,7 @@ class DCTATests(TestCase):
         self.assertEqual(len(self.dcta.events), 0)
 
         mock_post.return_value = expected_response
-        event = self.dcta.add_command_event(
+        self.dcta.add_command_event(
             command='answer Hearthstone', response_url='https://my-response/url/'
         )
 

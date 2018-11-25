@@ -84,7 +84,7 @@ class EventTests(TestCase):
             'event_data': 'answer Dota 2',
             'id': 4,
         }
-   
+
         responses.add(
             responses.POST, 'https://api.adv.gg/v1/dcta-events/',
             json=event_1_response, status=201,
