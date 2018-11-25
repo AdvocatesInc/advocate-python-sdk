@@ -70,6 +70,12 @@ class AdvClient:
         """
         return self._call_advocate_api('patch', endpoint, data=data, files=files)
 
+    def delete(self, endpoint):
+        """
+        Make a `delete` request to the Advocate API
+        """
+        return self._call_advocate_api('delete', endpoint)
+
     def get_dctas(self):
         """
         Fetches and deserializes all DCTAs from the user's account

@@ -1,6 +1,7 @@
 import os
 
 from . import widgets
+from .events import Event, EVENT_TYPES
 from .exceptions import UpdateError, APIException, RenderError
 
 
@@ -14,7 +15,10 @@ def class_from_type(type_string):
 
 
 class DCTA:
-    def __init__(self, client, id=None, name='', widgets=None, global_styles=None, component=None):
+    def __init__(
+        self, client, id=None, name='', widgets=None, global_styles=None,
+        component=None, events=None
+    ):
         self.client = client
 
         self.id = id
@@ -23,6 +27,7 @@ class DCTA:
         self.component = component
 
         self.widgets = [] if widgets is None else widgets
+        self.events = [] if events is None else events
 
     def __repr__(self):
         return '<DCTA: {}>'.format(self)
@@ -36,6 +41,7 @@ class DCTA:
         Deserializes DCTA from dictionary
         """
         widgets_data = dcta_data.pop('widgets', [])
+        events_data = dcta_data.pop('events', [])
 
         dcta = cls(client, **dcta_data)
         client.dctas[dcta.id] = dcta
@@ -44,6 +50,10 @@ class DCTA:
             widget_class = class_from_type(widget['type'])
             widget['dcta'] = dcta.id
             dcta.widgets.append(widget_class.deserialize(client, widget))
+
+        for event in events_data:
+            event['dcta'] = dcta.id
+            dcta.events.append(Event.deserialize(client, event))
 
         return dcta
 
@@ -55,12 +65,16 @@ class DCTA:
             'global_styles': self.global_styles,
             'name': self.name,
             'widgets': [],
+            'events': [],
             'id': self.id,
             'component': self.component,
         }
 
         for widget in self.widgets:
             data['widgets'].append(widget.serialize())
+
+        for event in self.events:
+            data['events'].append(event.serialize())
 
         return data
 
@@ -127,6 +141,44 @@ class DCTA:
             self.render()
 
         return widget
+
+    def add_command_event(self, command=None, response_url=None):
+        """
+        Adds an Event with type `CC` (aka Chatbot Command)
+        """
+        for kwarg in [command, response_url]:
+            assert kwarg is not None, (
+                '"{}" is a required argument for `add_command_event`'
+            )
+        return self._add_event(
+            'CC', event_data=command, response_url=response_url
+        )
+
+    def _add_event(self, event_type, **kwargs):
+        """
+        Creates an Event of a given type 
+        """
+        new_event_data = {
+            'event_type': event_type,
+            'dcta': self.id,
+            **kwargs,
+        }
+
+        try:
+            event_data = self.client.post(
+                'dcta-events/', data=new_event_data,
+            )
+        except APIException as error:
+            raise UpdateError(
+                'Could not create new {} event_type: {}'.format(
+                    EVENT_TYPES[event_type], error.message
+                )
+            )
+
+        event = Event.deserialize(self.client, event_data)
+        self.events.append(event)
+
+        return event
 
     def render(self):
         """
