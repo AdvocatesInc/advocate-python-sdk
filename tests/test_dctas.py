@@ -25,6 +25,24 @@ class DCTATests(TestCase):
             'id': 2,
             'name': 'Test DCTA',
             'component': 7,
+            'events': [
+                {
+                    'dcta': 2,
+                    'event_type': 'CC',
+                    'response_url': 'https://my-response/url/',
+                    'active': True,
+                    'id': 3,
+                    'event_data': 'hearthstone',
+                },
+                {
+                    'dcta': 2,
+                    'event_type': 'CC',
+                    'response_url': 'https://my-response/url/',
+                    'active': True,
+                    'id': 4,
+                    'event_data': 'hs',
+                },
+            ],
             'global_styles': {
                 'position': 'absolute',
                 'top': '50%',
@@ -55,6 +73,8 @@ class DCTATests(TestCase):
         self.assertEqual(dcta.widgets[1].__class__, ImageWidget)
         self.assertEqual(dcta.widgets[0].text, 'Hello!')
         self.assertEqual(dcta.widgets[1].src, 'https://my/image.jpg')
+
+        self.assertEqual(len(dcta.events), 2)
 
     @responses.activate
     def test_add_text_widget_creates_and_adds_widget(self):
@@ -142,6 +162,7 @@ class DCTATests(TestCase):
             'global_styles': {},
             'id': self.dcta.id,
             'component': 7,
+            'events': [],
             'widgets': [
                 {
                     'name': 'Dummy Text Widget',
@@ -201,3 +222,33 @@ class DCTATests(TestCase):
         mock_put.assert_called_with('dctas/15/', {'global_styles': {'#dcta-widget-15': {'color': 'red'}}})
 
         self.assertEqual(self.dcta.global_styles, {'#dcta-widget-15': {'color': 'red'}})
+
+    @patch('adv.client.AdvClient.post')
+    def test_add_command_event(self, mock_post):
+        """
+        Calling `add_command_event` on a DCTA should post the proper
+        data to the API and add the Event to the DCTA's events list
+        """
+        expected_post = {
+            'dcta': self.dcta.id,
+            'event_type': 'CC',
+            'event_data': 'answer Hearthstone',
+            'response_url': 'https://my-response/url/',
+        }
+
+        expected_response = {
+            **expected_post,
+            'id': 3,
+            'active': True,
+        }
+
+        self.assertEqual(len(self.dcta.events), 0)
+
+        mock_post.return_value = expected_response
+        self.dcta.add_command_event(
+            command='answer Hearthstone', response_url='https://my-response/url/'
+        )
+
+        mock_post.assert_called_with('dcta-events/', data=expected_post)
+
+        self.assertEqual(len(self.dcta.events), 1)

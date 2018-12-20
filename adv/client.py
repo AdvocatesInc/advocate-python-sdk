@@ -1,5 +1,6 @@
 import os
 import requests
+import json
 
 from .exceptions import APIException, NoMatchException
 from .campaigns import Campaign
@@ -33,7 +34,7 @@ class AdvClient:
         if data is not None and files is None:
             kwargs['json'] = data
         elif data is not None:
-            kwargs['data'] = data
+            kwargs['data'] = {key: json.dumps(value) for key, value in data.items()}
             kwargs['files'] = files
 
         response = api_call(url, headers=headers, **kwargs)
@@ -68,6 +69,12 @@ class AdvClient:
         Make a `patch` request to the Advocate API
         """
         return self._call_advocate_api('patch', endpoint, data=data, files=files)
+
+    def delete(self, endpoint):
+        """
+        Make a `delete` request to the Advocate API
+        """
+        return self._call_advocate_api('delete', endpoint)
 
     def get_dctas(self):
         """
