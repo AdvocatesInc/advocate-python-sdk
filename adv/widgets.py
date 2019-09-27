@@ -108,6 +108,13 @@ class Widget:
 
         self.update(styles=new_styles, force_render=force_render)
 
+    def delete(self):
+        """
+        Removes the Widget from the Advocate database.
+        This will NOT remove the local Widget object
+        """
+        self.client.delete('widgets/{}/{}/'.format(self.type, self.id))
+
 
 class TextWidget(Widget):
     extra_fields = [{'name': 'text', 'default': ''}]

@@ -1,6 +1,7 @@
 import os
 
 from . import widgets
+from .broadcasters import Broadcaster
 from .events import Event, EVENT_TYPES
 from .exceptions import UpdateError, APIException, RenderError
 
@@ -85,7 +86,7 @@ class DCTA:
         if not text:
             raise UpdateError('`text` is a required kwarg for `add_text_widget`')
 
-        self._add_widget('text', text=text, **kwargs)
+        return self._add_widget('text', text=text, **kwargs)
 
     def add_image_widget(self, src='', **kwargs):
         """
@@ -95,7 +96,9 @@ class DCTA:
             raise UpdateError('`src` is a required kwarg for `add_image_widget`')
 
         with open(src, 'rb') as src_file:
-            self._add_widget('image', files={'src': (os.path.basename(src), src_file)}, **kwargs)
+            widget = self._add_widget('image', files={'src': (os.path.basename(src), src_file)}, **kwargs)
+
+        return widget
 
     def add_video_widget(self, src='', **kwargs):
         """
@@ -105,13 +108,15 @@ class DCTA:
             raise UpdateError('`src` is a required kwarg for `add_video_widget`')
 
         with open(src, 'rb') as src_file:
-            self._add_widget('video', files={'src': (os.path.basename(src), src_file)}, **kwargs)
+            widget = self._add_widget('video', files={'src': (os.path.basename(src), src_file)}, **kwargs)
+
+        return widget
 
     def add_group_widget(self, **kwargs):
         """
         Creates a new GroupWidget on this DCTA
         """
-        self._add_widget('group', **kwargs)
+        return self._add_widget('group', **kwargs)
 
     def _add_widget(self, type, force_render=False, broadcasters=[], files=None, **kwargs):
         """
@@ -219,3 +224,23 @@ class DCTA:
             self.render()
 
         return self
+
+    def get_broadcasters(self):
+        """
+        Fetches all broadcasters associated with this DCTA
+        (i.e. all broadcasters on the campaign that have the appropriate
+        labels)
+        """
+        broadcasters = self.client.get('dctas/{}/broadcasters/'.format(self.id))
+        self.broadcasters = [
+            Broadcaster(self.client, name=b['name'], id=b['id']) for b in broadcasters
+        ]
+
+        return self.broadcasters
+
+    def delete(self):
+        """
+        Removes the DCTA and its corresonding component from the Advocate database.
+        This will NOT remove the local DCTA object
+        """
+        self.client.delete('dctas/{}/'.format(self.id))
